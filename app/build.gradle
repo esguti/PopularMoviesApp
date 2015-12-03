@@ -12,9 +12,13 @@ android {
         versionName "1.0"
     }
     buildTypes {
+        debug {
+            resValue "string", "MOVIEDB_API_KEY", MOVIEDB_API_KEY_PROP
+        }
         release {
             minifyEnabled false
             proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+            resValue "string", "MOVIEDB_API_KEY", MOVIEDB_API_KEY_PROP
         }
     }
 }
