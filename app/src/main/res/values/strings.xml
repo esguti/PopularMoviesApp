@@ -1,3 +1,13 @@
 <resources>
     <string name="app_name">Popular Movies App</string>
+
+    <!--
+        Construct the URL for the themoviedb query
+        Possible parameters are avaiable at API page, at
+        http://docs.themoviedb.apiary.io/#
+    -->
+    <string name="tmdb_base_url">http://api.themoviedb.org/3/discover/movie?</string>
+    <string name="tmdb_key_param">api_key</string>
+    <string name="tmdb_sort_param">sort_by</string>
+    <string name="tmdb_poster_base_url">http://image.tmdb.org/t/p/w185</string>
 </resources>
