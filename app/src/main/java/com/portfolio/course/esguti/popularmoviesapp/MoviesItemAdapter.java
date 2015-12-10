@@ -46,16 +46,11 @@ public class MoviesItemAdapter extends ArrayAdapter<MovieItem> {
 
         ImageView iconView = (ImageView) convertView.findViewById(R.id.movie_item_image);
 
-        // Use Picasso to manage the images
-        String poster_url =
-                convertView.getResources().getString(R.string.tmdb_poster_base_url)
-                        + "/"
-                        + movieItem.poster_path;
-        //Log.d(LOG_TAG, poster_url);
-        Picasso.with(getContext()).load(poster_url).into(iconView);
+        // Use Picasso to manage the images;
+        Picasso.with(getContext()).load(movieItem.getPoster_path(getContext())).into(iconView);
 
         TextView movieNameView = (TextView) convertView.findViewById(R.id.movie_item_text);
-        movieNameView.setText(movieItem.title);
+        movieNameView.setText(movieItem.getTitle());
 
         return convertView;
     }

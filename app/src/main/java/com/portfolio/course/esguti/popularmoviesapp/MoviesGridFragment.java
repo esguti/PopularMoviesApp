@@ -167,9 +167,7 @@ public class MoviesGridFragment extends Fragment {
         protected void onPostExecute(ArrayList<MovieItem> result) {
             if (result != null) {
                 g_movieAdapter.clear();
-                for (MovieItem movieItem : result) {
-                    g_movieAdapter.add(movieItem);
-                }
+                g_movieAdapter.addAll(result);
             }
         }
 
@@ -183,15 +181,18 @@ public class MoviesGridFragment extends Fragment {
         JSONArray array = (JSONArray) jsonObject.get("results");
         for (int i = 0; i < array.length(); i++) {
             JSONObject jsonMovieObject = array.getJSONObject(i);
-            MovieItem movieItem = new MovieItem(Integer.parseInt(jsonMovieObject.getString("id")));
 
-            if( jsonMovieObject.has("poster_path") ) {
-                movieItem.setPoster_path(jsonMovieObject.getString("poster_path"));
+            if( jsonMovieObject.has("title") && jsonMovieObject.has("id")) {
+                MovieItem movieItem = new MovieItem(
+                        Integer.parseInt(jsonMovieObject.getString("id")),
+                        jsonMovieObject.getString("title")
+                        );
+
+                if( jsonMovieObject.has("poster_path") )
+                    movieItem.setPoster_path(jsonMovieObject.getString("poster_path"));
+
+                results.add(movieItem);
             }
-            if( jsonMovieObject.has("title") ) {
-                movieItem.setTitle(jsonMovieObject.getString("title"));
-            }
-            results.add(movieItem);
         }
 
         return results;
