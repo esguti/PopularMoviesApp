@@ -10,4 +10,7 @@
     <string name="tmdb_key_param">api_key</string>
     <string name="tmdb_sort_param">sort_by</string>
     <string name="tmdb_poster_base_url">http://image.tmdb.org/t/p/w185</string>
+    <string name="sort">sort</string>
+    <string name="sort_most_popular">most popular</string>
+    <string name="sort_highest_rated">highest rated</string>
 </resources>

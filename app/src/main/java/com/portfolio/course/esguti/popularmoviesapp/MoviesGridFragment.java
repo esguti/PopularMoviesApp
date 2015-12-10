@@ -12,6 +12,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.GridView;
@@ -61,6 +62,37 @@ public class MoviesGridFragment extends Fragment {
         FetchMoviesTask moviesTask = new FetchMoviesTask();
         moviesTask.execute();
         return rootView;
+    }
+
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+    }
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_movies, menu);
+        super.onCreateOptionsMenu(menu, inflater);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        switch (item.getItemId()) {
+            case R.id.sort_highest_rated:
+                FetchMoviesTask moviesTask1 = new FetchMoviesTask();
+                moviesTask1.execute("vote_average.desc");
+                return true;
+
+            case R.id.sort_most_popular:
+                FetchMoviesTask moviesTask2 = new FetchMoviesTask();
+                moviesTask2.execute("popularity.desc");
+                return true;
+
+            default:
+                return super.onOptionsItemSelected(item);
+        }
     }
 
     /**

@@ -30,5 +30,7 @@ public class MovieItem {
     }
 
     //SET methods
-    public void setPoster_path(String poster_path) { this.poster_path = poster_path; }
+    public void setPoster_path(String poster_path) {
+        if(poster_path != "null") this.poster_path = poster_path;
+    }
 }
