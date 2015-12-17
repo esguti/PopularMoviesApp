@@ -1,12 +1,15 @@
 package com.portfolio.course.esguti.popularmoviesapp;
 
 import android.content.Context;
+import android.content.Intent;
+import android.content.SharedPreferences;
 import android.content.res.Resources;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -15,8 +18,8 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import com.squareup.picasso.Picasso;
 
@@ -33,7 +36,6 @@ import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
 import java.util.ArrayList;
-import java.util.Arrays;
 
 
 /**
@@ -42,7 +44,8 @@ import java.util.Arrays;
 public class MoviesGridFragment extends Fragment {
 
     private final String LOG_TAG = MoviesGridFragment.class.getSimpleName();
-    private MoviesItemAdapter g_movieAdapter;
+    static final MoviesItemAdapter STATE_ADAPTER = null;
+    private MoviesItemAdapter m_movieAdapter;
 
     public MoviesGridFragment() {}
 
@@ -53,17 +56,32 @@ public class MoviesGridFragment extends Fragment {
         View rootView = inflater.inflate(R.layout.fragment_movies_grid, container, false);
 
         //create the adaptor
-        g_movieAdapter = new MoviesItemAdapter(getActivity());
+        m_movieAdapter = new MoviesItemAdapter(getActivity());
+
         // Get a reference to the GridView, and attach this adapter to it.
-        GridView gridView = (GridView) rootView.findViewById(R.id.fragment_movies_grid);
-        gridView.setAdapter(g_movieAdapter);
+        final GridView gridView = (GridView) rootView.findViewById(R.id.fragment_movies_grid);
+        gridView.setAdapter(m_movieAdapter);
+
         // in debug mode show indicators
         if (BuildConfig.DEBUG){ Picasso.with(getContext()).setIndicatorsEnabled(true); }
-        FetchMoviesTask moviesTask = new FetchMoviesTask();
-        moviesTask.execute();
+
+        //add the listener for launch detail when movie is pressed
+        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            @Override
+            public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
+                MovieItem movie = m_movieAdapter.getItem(position);
+                Intent movieIntent = new Intent(getActivity(), MovieDetailActivity.class);
+                movieIntent.putExtra(MovieItem.class.getName(), movie);
+
+                // Verify that the intent will resolve to an activity
+                if (movieIntent.resolveActivity(getContext().getPackageManager()) != null) {
+                    startActivity(movieIntent);
+                }
+            }
+        });
+
         return rootView;
     }
-
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -79,20 +97,33 @@ public class MoviesGridFragment extends Fragment {
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
-        switch (item.getItemId()) {
-            case R.id.sort_highest_rated:
-                FetchMoviesTask moviesTask1 = new FetchMoviesTask();
-                moviesTask1.execute("vote_average.desc");
-                return true;
 
-            case R.id.sort_most_popular:
-                FetchMoviesTask moviesTask2 = new FetchMoviesTask();
-                moviesTask2.execute("popularity.desc");
-                return true;
+        int id = item.getItemId();
 
-            default:
-                return super.onOptionsItemSelected(item);
+        switch (id){
+            case R.id.action_settings:
+                Intent settings = new Intent(getActivity(), SettingsActivity.class);
+                startActivity(settings);
+                return true;
+            case R.id.action_refresh:
+                updateMovies();
+                return true;
         }
+        return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onStart(){
+        super.onStart();
+        updateMovies();
+    }
+
+    private void updateMovies(){
+        FetchMoviesTask moviesTask = new FetchMoviesTask();
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String sort_mode = prefs.getString(getString(R.string.pref_header_sort_key),
+                getString(R.string.pref_header_sort_key_default));
+        moviesTask.execute(sort_mode);
     }
 
     /**
@@ -105,9 +136,10 @@ public class MoviesGridFragment extends Fragment {
         @Override
         protected ArrayList<MovieItem> doInBackground(String... params) {
 
-            // If there's no sort filter, just look for all films.
-            String sort_param = "";
+            // If there's no sort filter, just look for all movies.
+            String sort_param = getString(R.string.pref_header_sort_key_default);
             if (params.length == 1) { sort_param = params[0]; }
+
 
             // Check if the NetworkConnection is active and connected.
             ConnectivityManager connMgr = (ConnectivityManager)
@@ -128,10 +160,10 @@ public class MoviesGridFragment extends Fragment {
                 Resources res = getResources();
                 Uri builtUri = Uri.parse(res.getString(R.string.tmdb_base_url)).buildUpon()
                         .appendQueryParameter(
-                                res.getString(R.string.tmdb_key_param),
+                                res.getString(R.string.tmdb_param_key),
                                 res.getString(R.string.MOVIEDB_API_KEY))
                         .appendQueryParameter(
-                                res.getString(R.string.tmdb_sort_param), sort_param)
+                                res.getString(R.string.tmdb_param_sort), sort_param)
                         .build();
                 URL url = new URL(builtUri.toString());
 
@@ -198,8 +230,8 @@ public class MoviesGridFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<MovieItem> result) {
             if (result != null) {
-                g_movieAdapter.clear();
-                g_movieAdapter.addAll(result);
+                m_movieAdapter.clear();
+                m_movieAdapter.addAll(result);
             }
         }
 
@@ -214,14 +246,24 @@ public class MoviesGridFragment extends Fragment {
         for (int i = 0; i < array.length(); i++) {
             JSONObject jsonMovieObject = array.getJSONObject(i);
 
-            if( jsonMovieObject.has("title") && jsonMovieObject.has("id")) {
+            if( jsonMovieObject.has(getString(R.string.tmdb_param_id))
+                    && jsonMovieObject.has(getString(R.string.tmdb_param_title))) {
                 MovieItem movieItem = new MovieItem(
-                        Integer.parseInt(jsonMovieObject.getString("id")),
-                        jsonMovieObject.getString("title")
+                        Integer.parseInt(jsonMovieObject.getString(getString(R.string.tmdb_param_id))),
+                        jsonMovieObject.getString(getString(R.string.tmdb_param_title))
                         );
-
-                if( jsonMovieObject.has("poster_path") )
-                    movieItem.setPoster_path(jsonMovieObject.getString("poster_path"));
+                if( jsonMovieObject.has(getString(R.string.tmdb_param_originalTitle)) )
+                    movieItem.setOriginalTitle(jsonMovieObject.getString(getString(R.string.tmdb_param_originalTitle)));
+                if( jsonMovieObject.has(getString(R.string.tmdb_param_synopsis)) )
+                    movieItem.setSynopsis(jsonMovieObject.getString(getString(R.string.tmdb_param_synopsis)));
+                if( jsonMovieObject.has(getString(R.string.tmdb_param_popularity)) )
+                    movieItem.setPopularity(jsonMovieObject.getString(getString(R.string.tmdb_param_popularity)));
+                if( jsonMovieObject.has(getString(R.string.tmdb_param_releaseDate)) )
+                    movieItem.setReleaseDate(jsonMovieObject.getString(getString(R.string.tmdb_param_releaseDate)));
+                if( jsonMovieObject.has(getString(R.string.tmdb_param_posterThumbail)) )
+                    movieItem.setPosterThumbail(jsonMovieObject.getString(getString(R.string.tmdb_param_posterThumbail)));
+                if( jsonMovieObject.has(getString(R.string.tmdb_param_posterPath)) )
+                    movieItem.setPosterPath(jsonMovieObject.getString(getString(R.string.tmdb_param_posterPath)));
 
                 results.add(movieItem);
             }

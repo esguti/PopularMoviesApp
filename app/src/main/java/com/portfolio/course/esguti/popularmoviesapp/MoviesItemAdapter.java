@@ -1,7 +1,6 @@
 package com.portfolio.course.esguti.popularmoviesapp;
 
 import android.app.Activity;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,8 +9,6 @@ import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
-
-import java.util.List;
 
 /**
  * Created by esguti on 08.12.15.
@@ -47,7 +44,7 @@ public class MoviesItemAdapter extends ArrayAdapter<MovieItem> {
         ImageView iconView = (ImageView) convertView.findViewById(R.id.movie_item_image);
 
         // Use Picasso to manage the images;
-        Picasso.with(getContext()).load(movieItem.getPoster_path(getContext())).into(iconView);
+        Picasso.with(getContext()).load(movieItem.getPosterPath(getContext())).into(iconView);
 
         TextView movieNameView = (TextView) convertView.findViewById(R.id.movie_item_text);
         movieNameView.setText(movieItem.getTitle());

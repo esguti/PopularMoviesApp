@@ -7,10 +7,33 @@
         http://docs.themoviedb.apiary.io/#
     -->
     <string name="tmdb_base_url">http://api.themoviedb.org/3/discover/movie?</string>
-    <string name="tmdb_key_param">api_key</string>
-    <string name="tmdb_sort_param">sort_by</string>
+    <string name="tmdb_param_key">api_key</string>
+    <string name="tmdb_param_sort">sort_by</string>
+    <string name="tmdb_param_id">id</string>
+    <string name="tmdb_param_title">title</string>
+    <string name="tmdb_param_originalTitle">original_title</string>
+    <string name="tmdb_param_synopsis">overview</string>
+    <string name="tmdb_param_popularity">popularity</string>
+    <string name="tmdb_param_releaseDate">release_date</string>
+    <string name="tmdb_param_posterThumbail">backdrop_path</string>
+    <string name="tmdb_param_posterPath">poster_path</string>
+
+
     <string name="tmdb_poster_base_url">http://image.tmdb.org/t/p/w185</string>
-    <string name="sort">sort</string>
-    <string name="sort_most_popular">most popular</string>
-    <string name="sort_highest_rated">highest rated</string>
+    <string name="title_activity_movie_detail">MovieDetailActivity</string>
+
+
+    <!-- Settings menu-->
+    <string name="pref_header_settings_label">Settings</string>
+    <!-- Sort settings -->
+    <string name="pref_header_sort_label">Sort Movies</string>
+    <string name="pref_header_sort_key">sort_movies</string>
+    <string name="pref_header_sort_label_default">Most popular Des</string>
+    <string name="pref_header_sort_key_default">popularity.desc</string>
+    <!-- Refresh menu -->
+    <string name="pref_header_refresh_label">Refresh</string>
+    <string name="pref_header_refresh_key">refresh</string>
+
+    action_refresh
+
 </resources>

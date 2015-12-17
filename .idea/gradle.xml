@@ -8,8 +8,8 @@
         <option name="gradleJvm" value="1.7" />
         <option name="modules">
           <set>
-            <option value="$PROJECT_DIR$" />
-            <option value="$PROJECT_DIR$/app" />
+            <option value="/media/EST_500GB/Cloud/Dropbox/Private/CursoAndroid/src/PopularMoviesApp" />
+            <option value="/media/EST_500GB/Cloud/Dropbox/Private/CursoAndroid/src/PopularMoviesApp/app" />
           </set>
         </option>
       </GradleProjectSettings>
