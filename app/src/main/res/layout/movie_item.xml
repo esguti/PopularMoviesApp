@@ -2,20 +2,20 @@
 <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent" android:layout_height="match_parent">
     <ImageView
-        android:layout_width="200dp"
-        android:layout_height="200dp"
-        android:scaleType="centerCrop"
-        android:id="@+id/movie_item_image"/>
+        android:id="@+id/movie_item_image"
+        android:layout_width="@dimen/movie_item_image"
+        android:layout_height="@dimen/movie_item_image"
+        android:scaleType="centerCrop"/>
 
     <TextView
         android:id="@+id/movie_item_text"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:paddingLeft="10dp"
-        android:paddingRight="10dp"
-        android:paddingTop="15dp"
-        android:paddingBottom="15dp"
+        android:paddingLeft="@dimen/movie_item_text_pad"
+        android:paddingRight="@dimen/movie_item_text_pad"
+        android:paddingTop="@dimen/movie_item_text_pad"
+        android:paddingBottom="@dimen/movie_item_text_pad"
         android:layout_gravity="bottom"
-        android:textColor="@android:color/white"
-        android:background="#55000000"/>
+        android:textColor="@color/movie_title_text"
+        android:background="@color/movie_title_back"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"/>
 </FrameLayout>

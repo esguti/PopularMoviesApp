@@ -46,6 +46,7 @@ public class MoviesGridFragment extends Fragment {
     private final String LOG_TAG = MoviesGridFragment.class.getSimpleName();
     static final MoviesItemAdapter STATE_ADAPTER = null;
     private MoviesItemAdapter m_movieAdapter;
+    private int m_numPage = 1;
 
     public MoviesGridFragment() {}
 
@@ -164,7 +165,9 @@ public class MoviesGridFragment extends Fragment {
                                 res.getString(R.string.MOVIEDB_API_KEY))
                         .appendQueryParameter(
                                 res.getString(R.string.tmdb_param_sort), sort_param)
-                        .build();
+                        .appendQueryParameter(
+                                res.getString(R.string.tmdb_param_page), Integer.toString(m_numPage))
+                                .build();
                 URL url = new URL(builtUri.toString());
 
                 Log.d(LOG_TAG, "Built URI " + builtUri.toString());
@@ -258,10 +261,12 @@ public class MoviesGridFragment extends Fragment {
                     movieItem.setSynopsis(jsonMovieObject.getString(getString(R.string.tmdb_param_synopsis)));
                 if( jsonMovieObject.has(getString(R.string.tmdb_param_popularity)) )
                     movieItem.setPopularity(jsonMovieObject.getString(getString(R.string.tmdb_param_popularity)));
+                if( jsonMovieObject.has(getString(R.string.tmdb_param_totalVotes)) )
+                    movieItem.setTotalVotes(jsonMovieObject.getString(getString(R.string.tmdb_param_totalVotes)));
                 if( jsonMovieObject.has(getString(R.string.tmdb_param_releaseDate)) )
                     movieItem.setReleaseDate(jsonMovieObject.getString(getString(R.string.tmdb_param_releaseDate)));
-                if( jsonMovieObject.has(getString(R.string.tmdb_param_posterThumbail)) )
-                    movieItem.setPosterThumbail(jsonMovieObject.getString(getString(R.string.tmdb_param_posterThumbail)));
+                if( jsonMovieObject.has(getString(R.string.tmdb_param_poster_thumb)) )
+                    movieItem.setPosterThumb(jsonMovieObject.getString(getString(R.string.tmdb_param_poster_thumb)));
                 if( jsonMovieObject.has(getString(R.string.tmdb_param_posterPath)) )
                     movieItem.setPosterPath(jsonMovieObject.getString(getString(R.string.tmdb_param_posterPath)));
 

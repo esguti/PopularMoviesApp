@@ -1,5 +1,9 @@
 <resources>
-    <string name="app_name">Popular Movies App</string>
+    <string name="app_name">Popular Movies</string>
+
+    <!-- Detail movie layout -->
+    <string name="thumb_description">Image thumbnail</string>
+    <string name="movie_detail_popbar_star_num">5</string>
 
     <!--
         Construct the URL for the themoviedb query
@@ -9,19 +13,18 @@
     <string name="tmdb_base_url">http://api.themoviedb.org/3/discover/movie?</string>
     <string name="tmdb_param_key">api_key</string>
     <string name="tmdb_param_sort">sort_by</string>
+    <string name="tmdb_param_page">page</string>
     <string name="tmdb_param_id">id</string>
     <string name="tmdb_param_title">title</string>
     <string name="tmdb_param_originalTitle">original_title</string>
     <string name="tmdb_param_synopsis">overview</string>
-    <string name="tmdb_param_popularity">popularity</string>
+    <string name="tmdb_param_popularity">vote_average</string>
+    <string name="tmdb_param_totalVotes">vote_count</string>
     <string name="tmdb_param_releaseDate">release_date</string>
-    <string name="tmdb_param_posterThumbail">backdrop_path</string>
+    <string name="tmdb_param_poster_thumb">backdrop_path</string>
     <string name="tmdb_param_posterPath">poster_path</string>
-
-
     <string name="tmdb_poster_base_url">http://image.tmdb.org/t/p/w185</string>
-    <string name="title_activity_movie_detail">MovieDetailActivity</string>
-
+    <string name="tmdb_thumb_width">185</string>
 
     <!-- Settings menu-->
     <string name="pref_header_settings_label">Settings</string>
@@ -33,7 +36,6 @@
     <!-- Refresh menu -->
     <string name="pref_header_refresh_label">Refresh</string>
     <string name="pref_header_refresh_key">refresh</string>
-
-    action_refresh
+    <string name="movie_detail_popbar_step_size">0.01</string>
 
 </resources>

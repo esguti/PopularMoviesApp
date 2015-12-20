@@ -13,9 +13,10 @@ public class MovieItem implements Parcelable {
     private String  title = "";
     private String  originalTitle = null;
     private String  synopsis = null;
-    private String  popularity = null;
+    private String  popularity = "0";
+    private String  totalVotes = "0";
     private String  releaseDate = null;
-    private String  posterThumbail = null;
+    private String  posterThumb = null;
     private String  posterPath = null;
 
     // CONSTRUCTORS
@@ -31,8 +32,9 @@ public class MovieItem implements Parcelable {
         originalTitle  = in.readString();
         synopsis       = in.readString();
         popularity     = in.readString();
+        totalVotes     = in.readString();
         releaseDate    = in.readString();
-        posterThumbail = in.readString();
+        posterThumb = in.readString();
         posterPath     = in.readString();
     }
 
@@ -44,8 +46,17 @@ public class MovieItem implements Parcelable {
     public String  getOriginalTitle() { return originalTitle; }
     public String  getSynopsis()      { return synopsis; }
     public String  getPopularity()    { return popularity; }
+    public String  getTotalVotes()    { return totalVotes; }
     public String  getReleaseDate()   { return releaseDate; }
-    public String  getPosterThumbail(Context context) {
+    public String getPosterThumb(Context context) {
+        if (posterThumb == null)
+            return ContentResolver.SCHEME_ANDROID_RESOURCE +
+                    "://" + context.getResources().getResourcePackageName(R.drawable.thumb_background)
+                    + '/' + context.getResources().getResourceTypeName(R.drawable.thumb_background)
+                    + '/' + context.getResources().getResourceEntryName(R.drawable.thumb_background);
+        else return context.getString(R.string.tmdb_poster_base_url) + "/" + posterThumb;
+    }
+    public String getPosterPath(Context context) {
         if (posterPath == null)
             return ContentResolver.SCHEME_ANDROID_RESOURCE +
                     "://" + context.getResources().getResourcePackageName(R.drawable.no_image)
@@ -53,22 +64,19 @@ public class MovieItem implements Parcelable {
                     + '/' + context.getResources().getResourceEntryName(R.drawable.no_image);
         else return context.getString(R.string.tmdb_poster_base_url) + "/" + posterPath;
     }
-    public String getPosterPath(Context context) {
-        if (posterThumbail == null)
-            return ContentResolver.SCHEME_ANDROID_RESOURCE +
-                    "://" + context.getResources().getResourcePackageName(R.drawable.thumbail_background)
-                    + '/' + context.getResources().getResourceTypeName(R.drawable.thumbail_background)
-                    + '/' + context.getResources().getResourceEntryName(R.drawable.thumbail_background);
-        else return context.getString(R.string.tmdb_poster_base_url) + "/" + posterPath;
-    }
 
     //SET methods
-    public void setOriginalTitle(String popularity) { this.popularity = popularity; }
+    public void setOriginalTitle(String originalTitle){ this.originalTitle = originalTitle; }
     public void setSynopsis(String synopsis) { this.synopsis = synopsis; }
-    public void setPopularity(String popularity) { this.popularity = popularity; }
+    public void setPopularity(String popularity) {
+        if( popularity != null ) this.popularity = popularity; }
+    public void setTotalVotes(String totalVotes) {
+        if( totalVotes != null ) this.totalVotes = totalVotes; }
     public void setReleaseDate(String releaseDate) { this.releaseDate = releaseDate; }
-    public void setPosterThumbail(String posterThumbail) { this.posterThumbail = posterThumbail; }
-    public void setPosterPath(String posterPath) { this.posterPath = posterPath; }
+    public void setPosterThumb(String posterThumb) {
+        if( posterThumb != "null" ){ this.posterThumb = posterThumb; } }
+    public void setPosterPath(String posterPath) {
+        if( posterPath != "null" ){ this.posterPath = posterPath; } }
 
 
     //PARCEABLE methods
@@ -97,8 +105,9 @@ public class MovieItem implements Parcelable {
         dest.writeString(originalTitle);
         dest.writeString(synopsis);
         dest.writeString(popularity);
+        dest.writeString(totalVotes);
         dest.writeString(releaseDate);
-        dest.writeString(posterThumbail);
+        dest.writeString(posterThumb);
         dest.writeString(posterPath);
     }
 }
