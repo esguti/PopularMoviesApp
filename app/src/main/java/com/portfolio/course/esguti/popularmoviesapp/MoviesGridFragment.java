@@ -18,6 +18,7 @@ import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
@@ -46,7 +47,13 @@ public class MoviesGridFragment extends Fragment {
     private final String LOG_TAG = MoviesGridFragment.class.getSimpleName();
     static final MoviesItemAdapter STATE_ADAPTER = null;
     private MoviesItemAdapter m_movieAdapter;
-    private int m_numPage = 1;
+    private boolean m_refresh = false;
+    private static final int MAX_PAGE = 1000;
+    private boolean m_isLoading = false;
+    private boolean m_lastPage = false;
+    private int m_visibleThreshold = 5;
+    private int m_currentPage = 1;
+    private int m_previousTotal = 0;
 
     public MoviesGridFragment() {}
 
@@ -81,6 +88,30 @@ public class MoviesGridFragment extends Fragment {
             }
         });
 
+        //add the listener for loading more movies when end of list is reached
+        gridView.setOnScrollListener( new AbsListView.OnScrollListener() {
+            @Override
+            public void onScrollStateChanged(AbsListView view, int scrollState) {}
+
+            @Override
+            public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
+                if ( m_isLoading ) {
+                    if (totalItemCount > m_previousTotal) {
+                        m_isLoading = false;
+                        m_previousTotal = totalItemCount;
+                        m_currentPage++;
+                        if (m_currentPage + 1 > MAX_PAGE) { m_lastPage = true; }
+                    }
+                }
+                if ( !m_lastPage && !m_isLoading
+                        && (totalItemCount - visibleItemCount) <= (firstVisibleItem + m_visibleThreshold) ) {
+                    updateMovies();
+                    m_isLoading = true;
+                }
+
+            }
+        });
+
         return rootView;
     }
 
@@ -107,6 +138,8 @@ public class MoviesGridFragment extends Fragment {
                 startActivity(settings);
                 return true;
             case R.id.action_refresh:
+                m_refresh = true;
+                m_currentPage = 1;
                 updateMovies();
                 return true;
         }
@@ -141,7 +174,6 @@ public class MoviesGridFragment extends Fragment {
             String sort_param = getString(R.string.pref_header_sort_key_default);
             if (params.length == 1) { sort_param = params[0]; }
 
-
             // Check if the NetworkConnection is active and connected.
             ConnectivityManager connMgr = (ConnectivityManager)
                     getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -158,6 +190,8 @@ public class MoviesGridFragment extends Fragment {
 
             try {
 
+                String num_page = Integer.toString(m_currentPage);
+
                 Resources res = getResources();
                 Uri builtUri = Uri.parse(res.getString(R.string.tmdb_base_url)).buildUpon()
                         .appendQueryParameter(
@@ -166,7 +200,7 @@ public class MoviesGridFragment extends Fragment {
                         .appendQueryParameter(
                                 res.getString(R.string.tmdb_param_sort), sort_param)
                         .appendQueryParameter(
-                                res.getString(R.string.tmdb_param_page), Integer.toString(m_numPage))
+                                res.getString(R.string.tmdb_param_page), num_page)
                                 .build();
                 URL url = new URL(builtUri.toString());
 
@@ -200,12 +234,16 @@ public class MoviesGridFragment extends Fragment {
 
                 Log.d(LOG_TAG, "TMDB string: " + buffer);
 
+                return parseResult(movieJsonStr);
+
             } catch (MalformedURLException e) {
                 Log.e(LOG_TAG, "Malformed URL ", e);
             } catch (ProtocolException e) {
                 Log.e(LOG_TAG, "Protocol Error ", e);
             } catch (IOException e) {
                 Log.e(LOG_TAG, "IO Error ", e);
+            } catch (JSONException e) {
+                Log.e(LOG_TAG, "Error parsing JSON String. " + e.getMessage(), e);
             } finally {
                 if (urlConnection != null) {
                     urlConnection.disconnect();
@@ -219,12 +257,6 @@ public class MoviesGridFragment extends Fragment {
                 }
             }
 
-            try {
-                return parseResult(movieJsonStr);
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, "Error parsing JSON String. " + e.getMessage(), e);
-            }
-
             return null;
 
         } // end of background
@@ -233,9 +265,13 @@ public class MoviesGridFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<MovieItem> result) {
             if (result != null) {
-                m_movieAdapter.clear();
+                if( m_refresh ){
+                    m_movieAdapter.clear();
+                    m_refresh = false;
+                }
                 m_movieAdapter.addAll(result);
             }
+            m_isLoading = false;
         }
 
     } // end of AsyncTask

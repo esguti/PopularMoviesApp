@@ -17,7 +17,7 @@
 
     <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
 
-    <style name="movie_detail_synopsis" parent="@android:style/TextAppearance.DeviceDefault.Medium">
+    <style name="movie_detail_synopsis" parent="@android:style/TextAppearance.DeviceDefault.Small">
         <item name="android:paddingLeft">@dimen/movie_detail_synopsis_pad</item>
         <item name="android:paddingRight">@dimen/movie_detail_synopsis_pad</item>
         <item name="android:paddingTop">@dimen/movie_detail_synopsis_pad</item>
