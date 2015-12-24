@@ -47,7 +47,6 @@ public class MoviesGridFragment extends Fragment {
     private final String LOG_TAG = MoviesGridFragment.class.getSimpleName();
     static final MoviesItemAdapter STATE_ADAPTER = null;
     private MoviesItemAdapter m_movieAdapter;
-    private boolean m_refresh = false;
     private static final int MAX_PAGE = 1000;
     private boolean m_isLoading = false;
     private boolean m_lastPage = false;
@@ -96,23 +95,23 @@ public class MoviesGridFragment extends Fragment {
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
                 if ( m_isLoading ) {
-                    if (totalItemCount > m_previousTotal) {
-                        m_isLoading = false;
-                        m_previousTotal = totalItemCount;
-                        m_currentPage++;
-                        if (m_currentPage + 1 > MAX_PAGE) { m_lastPage = true; }
-                    }
+                    if (totalItemCount > m_previousTotal) { m_previousTotal = totalItemCount; }
                 }
                 if ( !m_lastPage && !m_isLoading
                         && (totalItemCount - visibleItemCount) <= (firstVisibleItem + m_visibleThreshold) ) {
-                    updateMovies();
-                    m_isLoading = true;
+                    updateMovies(m_currentPage);
                 }
 
             }
         });
 
         return rootView;
+    }
+
+    @Override
+    public void onResume(){
+        super.onResume();  // Always call the superclass method first
+        resetPage();
     }
 
     @Override
@@ -138,26 +137,32 @@ public class MoviesGridFragment extends Fragment {
                 startActivity(settings);
                 return true;
             case R.id.action_refresh:
-                m_refresh = true;
-                m_currentPage = 1;
-                updateMovies();
+                resetPage();
                 return true;
         }
         return super.onOptionsItemSelected(item);
     }
 
-    @Override
-    public void onStart(){
-        super.onStart();
-        updateMovies();
-    }
 
-    private void updateMovies(){
+        private void resetPage(){
+            if( !m_isLoading ) {
+                m_movieAdapter.clear();
+                m_currentPage = 1;
+                m_lastPage = false;
+                updateMovies(m_currentPage);
+            }
+        }
+
+    private void updateMovies(int current_page){
         FetchMoviesTask moviesTask = new FetchMoviesTask();
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String sort_mode = prefs.getString(getString(R.string.pref_header_sort_key),
                 getString(R.string.pref_header_sort_key_default));
-        moviesTask.execute(sort_mode);
+        String current_page_str = Integer.toString(current_page);
+        moviesTask.execute(sort_mode, current_page_str);
+        m_isLoading = true;
+        m_currentPage++;
+        if (m_currentPage + 1 > MAX_PAGE) { m_lastPage = true; }
     }
 
     /**
@@ -172,7 +177,9 @@ public class MoviesGridFragment extends Fragment {
 
             // If there's no sort filter, just look for all movies.
             String sort_param = getString(R.string.pref_header_sort_key_default);
-            if (params.length == 1) { sort_param = params[0]; }
+            if (params.length > 0) { sort_param = params[0]; }
+            String num_page = "1";
+            if (params.length > 1) { num_page = params[1]; }
 
             // Check if the NetworkConnection is active and connected.
             ConnectivityManager connMgr = (ConnectivityManager)
@@ -189,8 +196,6 @@ public class MoviesGridFragment extends Fragment {
             String movieJsonStr = null;
 
             try {
-
-                String num_page = Integer.toString(m_currentPage);
 
                 Resources res = getResources();
                 Uri builtUri = Uri.parse(res.getString(R.string.tmdb_base_url)).buildUpon()
@@ -265,10 +270,6 @@ public class MoviesGridFragment extends Fragment {
         @Override
         protected void onPostExecute(ArrayList<MovieItem> result) {
             if (result != null) {
-                if( m_refresh ){
-                    m_movieAdapter.clear();
-                    m_refresh = false;
-                }
                 m_movieAdapter.addAll(result);
             }
             m_isLoading = false;
