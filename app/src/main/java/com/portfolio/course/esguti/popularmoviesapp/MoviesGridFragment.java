@@ -53,6 +53,7 @@ public class MoviesGridFragment extends Fragment {
     private int m_visibleThreshold = 5;
     private int m_currentPage = 1;
     private int m_previousTotal = 0;
+    private boolean m_reset = true;
 
     public MoviesGridFragment() {}
 
@@ -82,6 +83,7 @@ public class MoviesGridFragment extends Fragment {
 
                 // Verify that the intent will resolve to an activity
                 if (movieIntent.resolveActivity(getContext().getPackageManager()) != null) {
+                    m_reset = false;
                     startActivity(movieIntent);
                 }
             }
@@ -111,7 +113,10 @@ public class MoviesGridFragment extends Fragment {
     @Override
     public void onResume(){
         super.onResume();  // Always call the superclass method first
-        resetPage();
+        if( m_reset ){
+            resetPage();
+        }
+        m_reset = true;
     }
 
     @Override
