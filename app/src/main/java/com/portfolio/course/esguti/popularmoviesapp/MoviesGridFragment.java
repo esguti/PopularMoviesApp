@@ -1,13 +1,7 @@
 package com.portfolio.course.esguti.popularmoviesapp;
 
-import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
-import android.content.res.Resources;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo;
-import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -24,18 +18,6 @@ import android.widget.GridView;
 
 import com.squareup.picasso.Picasso;
 
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
-import java.net.URL;
 import java.util.ArrayList;
 
 
@@ -45,15 +27,16 @@ import java.util.ArrayList;
 public class MoviesGridFragment extends Fragment {
 
     private final String LOG_TAG = MoviesGridFragment.class.getSimpleName();
-    static final MoviesItemAdapter STATE_ADAPTER = null;
+
     private MoviesItemAdapter m_movieAdapter;
+    private GridView m_gridView;
     private static final int MAX_PAGE = 1000;
+    private int VISIBLE_THRESHOLD = 5;
     private boolean m_isLoading = false;
     private boolean m_lastPage = false;
-    private int m_visibleThreshold = 5;
     private int m_currentPage = 1;
     private int m_previousTotal = 0;
-    private boolean m_reset = true;
+    private String m_previous_sort_mode = null;
 
     public MoviesGridFragment() {}
 
@@ -67,14 +50,14 @@ public class MoviesGridFragment extends Fragment {
         m_movieAdapter = new MoviesItemAdapter(getActivity());
 
         // Get a reference to the GridView, and attach this adapter to it.
-        final GridView gridView = (GridView) rootView.findViewById(R.id.fragment_movies_grid);
-        gridView.setAdapter(m_movieAdapter);
+        m_gridView = (GridView) rootView.findViewById(R.id.fragment_movies_grid);
+        m_gridView.setAdapter(m_movieAdapter);
 
         // in debug mode show indicators
         if (BuildConfig.DEBUG){ Picasso.with(getContext()).setIndicatorsEnabled(true); }
 
         //add the listener for launch detail when movie is pressed
-        gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        m_gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 MovieItem movie = m_movieAdapter.getItem(position);
@@ -83,46 +66,101 @@ public class MoviesGridFragment extends Fragment {
 
                 // Verify that the intent will resolve to an activity
                 if (movieIntent.resolveActivity(getContext().getPackageManager()) != null) {
-                    m_reset = false;
                     startActivity(movieIntent);
                 }
             }
         });
 
         //add the listener for loading more movies when end of list is reached
-        gridView.setOnScrollListener( new AbsListView.OnScrollListener() {
+        m_gridView.setOnScrollListener(new AbsListView.OnScrollListener() {
             @Override
-            public void onScrollStateChanged(AbsListView view, int scrollState) {}
+            public void onScrollStateChanged(AbsListView view, int scrollState) {
+            }
 
             @Override
             public void onScroll(AbsListView view, int firstVisibleItem, int visibleItemCount, int totalItemCount) {
-                if ( m_isLoading ) {
-                    if (totalItemCount > m_previousTotal) { m_previousTotal = totalItemCount; }
+                if (m_isLoading) {
+                    if (totalItemCount > m_previousTotal) {
+                        m_previousTotal = totalItemCount;
+                    }
                 }
-                if ( !m_lastPage && !m_isLoading
-                        && (totalItemCount - visibleItemCount) <= (firstVisibleItem + m_visibleThreshold) ) {
+                if (!m_lastPage && !m_isLoading
+                        && (totalItemCount - VISIBLE_THRESHOLD) <= (firstVisibleItem + visibleItemCount)) {
                     updateMovies(m_currentPage);
                 }
-
             }
         });
+
+        String clean = "null";
+        if( savedInstanceState != null ) clean = savedInstanceState.toString();
+        Log.d(LOG_TAG, "Call onCreateView: " + clean);
+        reloadInstance(savedInstanceState);
 
         return rootView;
     }
 
+
+    @Override
+    public void onSaveInstanceState(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        saveInstance(savedInstanceState);
+    }
+
+
     @Override
     public void onResume(){
-        super.onResume();  // Always call the superclass method first
-        if( m_reset ){
+        super.onResume();
+
+        //reset in case of sort mode change
+        SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+        String currrent_sort_mode = prefs.getString(getString(R.string.pref_header_sort_key),
+                getString(R.string.pref_header_sort_key_default));
+        if( m_previous_sort_mode != null && !m_previous_sort_mode.equals(currrent_sort_mode) ){
             resetPage();
         }
-        m_reset = true;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
+    }
+
+    private void saveInstance(Bundle savedInstanceState) {
+        super.onSaveInstanceState(savedInstanceState);
+        // Save UI state changes to the savedInstanceState.
+        // This bundle will be passed to onCreate if the process is
+        // killed and restarted.
+        savedInstanceState.putInt("currentPos",m_gridView.getFirstVisiblePosition());
+        savedInstanceState.putBoolean("m_lastPage", m_lastPage);
+        savedInstanceState.putInt("m_currentPage", m_currentPage);
+        savedInstanceState.putInt("m_previousTotal", m_previousTotal);
+        savedInstanceState.putString("m_previous_sort_mode", m_previous_sort_mode);
+        ArrayList<MovieItem> movieItems = new ArrayList<>();
+        for (int i = 0; i < m_movieAdapter.getCount(); i++) {
+            movieItems.add(m_movieAdapter.getItem(i));
+        }
+        savedInstanceState.putParcelableArrayList("m_movieItems", movieItems);
+    }
+
+    private void reloadInstance(Bundle savedInstanceState){
+        if( savedInstanceState != null) {
+            m_lastPage = savedInstanceState.getBoolean("m_lastPage");
+            m_currentPage = savedInstanceState.getInt("m_currentPage");
+            m_previousTotal = savedInstanceState.getInt("m_previousTotal");
+            m_previous_sort_mode = savedInstanceState.getString("m_previous_sort_mode");
+            ArrayList<MovieItem> movieItems = savedInstanceState.getParcelableArrayList("m_movieItems");
+            if( movieItems != null ) {
+                // if update movies has been called before, not update in postupdate
+                if ( m_isLoading ){ m_isLoading = false; }
+                m_movieAdapter.clear();
+                m_movieAdapter.addAll(movieItems);
+                m_gridView.setSelection(savedInstanceState.getInt("currentPos"));
+                Log.d(LOG_TAG, "Restored items: " + String.valueOf(movieItems.size()));
+                Log.d(LOG_TAG, "Restored lastpage: " + String.valueOf(m_currentPage));
+                Log.d(LOG_TAG, "Restored position: " + savedInstanceState.getInt("currentPos"));
+            }
+        }
     }
 
     @Override
@@ -138,6 +176,9 @@ public class MoviesGridFragment extends Fragment {
 
         switch (id){
             case R.id.action_settings:
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                m_previous_sort_mode = prefs.getString(getString(R.string.pref_header_sort_key),
+                        getString(R.string.pref_header_sort_key_default));
                 Intent settings = new Intent(getActivity(), SettingsActivity.class);
                 startActivity(settings);
                 return true;
@@ -149,174 +190,34 @@ public class MoviesGridFragment extends Fragment {
     }
 
 
-        private void resetPage(){
-            if( !m_isLoading ) {
-                m_movieAdapter.clear();
-                m_currentPage = 1;
-                m_lastPage = false;
-                updateMovies(m_currentPage);
-            }
+    private void resetPage(){
+        if( !m_isLoading ) {
+            m_movieAdapter.clear();
+            m_currentPage = 1;
+            m_lastPage = false;
+            m_previousTotal = 0;
+            updateMovies(m_currentPage);
         }
+    }
 
     private void updateMovies(int current_page){
-        FetchMoviesTask moviesTask = new FetchMoviesTask();
+        FetchMoviesTask moviesTask = new FetchMoviesTask(getContext(), this);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String sort_mode = prefs.getString(getString(R.string.pref_header_sort_key),
                 getString(R.string.pref_header_sort_key_default));
         String current_page_str = Integer.toString(current_page);
-        moviesTask.execute(sort_mode, current_page_str);
         m_isLoading = true;
+        moviesTask.execute(sort_mode, current_page_str);
         m_currentPage++;
         if (m_currentPage + 1 > MAX_PAGE) { m_lastPage = true; }
     }
 
-    /**
-     * Background task to fetch movie info from themoviedb API.
-     */
-    public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<MovieItem>> {
-
-        private final String LOG_TAG = FetchMoviesTask.class.getSimpleName();
-
-        @Override
-        protected ArrayList<MovieItem> doInBackground(String... params) {
-
-            // If there's no sort filter, just look for all movies.
-            String sort_param = getString(R.string.pref_header_sort_key_default);
-            if (params.length > 0) { sort_param = params[0]; }
-            String num_page = "1";
-            if (params.length > 1) { num_page = params[1]; }
-
-            // Check if the NetworkConnection is active and connected.
-            ConnectivityManager connMgr = (ConnectivityManager)
-                    getContext().getSystemService(Context.CONNECTIVITY_SERVICE);
-            NetworkInfo networkInfo = connMgr.getActiveNetworkInfo();
-            if (networkInfo == null || !networkInfo.isConnected()) {
-                return null;
-            }
-
-            HttpURLConnection urlConnection = null;
-            BufferedReader reader = null;
-
-            // Will contain the raw JSON response as a string.
-            String movieJsonStr = null;
-
-            try {
-
-                Resources res = getResources();
-                Uri builtUri = Uri.parse(res.getString(R.string.tmdb_base_url)).buildUpon()
-                        .appendQueryParameter(
-                                res.getString(R.string.tmdb_param_key),
-                                res.getString(R.string.MOVIEDB_API_KEY))
-                        .appendQueryParameter(
-                                res.getString(R.string.tmdb_param_sort), sort_param)
-                        .appendQueryParameter(
-                                res.getString(R.string.tmdb_param_page), num_page)
-                                .build();
-                URL url = new URL(builtUri.toString());
-
-                Log.d(LOG_TAG, "Built URI " + builtUri.toString());
-
-                // Create the request to themoviedb, and open the connection
-                urlConnection = (HttpURLConnection) url.openConnection();
-                urlConnection.setRequestMethod("GET");
-                urlConnection.setReadTimeout(10000 /* milliseconds */);
-                urlConnection.setConnectTimeout(15000 /* milliseconds */);
-                urlConnection.addRequestProperty("Accept", "application/json");
-                urlConnection.setDoInput(true);
-                urlConnection.connect();
-
-                Log.d(LOG_TAG, "Response: "
-                        + urlConnection.getResponseCode() + " "
-                        + urlConnection.getResponseMessage());
-
-                // Read the input stream into a String
-                InputStream inputStream = urlConnection.getInputStream();
-                StringBuffer buffer = new StringBuffer();
-                if (inputStream == null) { return null; }
-                reader = new BufferedReader(new InputStreamReader(inputStream));
-
-                // append new line for debugging
-                String line;
-                while ((line = reader.readLine()) != null) { buffer.append(line + "\n"); }
-
-                if (buffer.length() == 0) { return null; }
-                movieJsonStr = buffer.toString();
-
-                Log.d(LOG_TAG, "TMDB string: " + buffer);
-
-                return parseResult(movieJsonStr);
-
-            } catch (MalformedURLException e) {
-                Log.e(LOG_TAG, "Malformed URL ", e);
-            } catch (ProtocolException e) {
-                Log.e(LOG_TAG, "Protocol Error ", e);
-            } catch (IOException e) {
-                Log.e(LOG_TAG, "IO Error ", e);
-            } catch (JSONException e) {
-                Log.e(LOG_TAG, "Error parsing JSON String. " + e.getMessage(), e);
-            } finally {
-                if (urlConnection != null) {
-                    urlConnection.disconnect();
-                }
-                if (reader != null) {
-                    try {
-                        reader.close();
-                    } catch (final IOException e) {
-                        Log.e(LOG_TAG, "Error closing stream", e);
-                    }
-                }
-            }
-
-            return null;
-
-        } // end of background
-
-
-        @Override
-        protected void onPostExecute(ArrayList<MovieItem> result) {
-            if (result != null) {
-                m_movieAdapter.addAll(result);
-            }
-            m_isLoading = false;
-        }
-
-    } // end of AsyncTask
-
-
-    private ArrayList<MovieItem> parseResult(String result) throws JSONException{
-        ArrayList<MovieItem> results = new ArrayList<MovieItem>();
-
-        JSONObject jsonObject = new JSONObject(result);
-        JSONArray array = (JSONArray) jsonObject.get("results");
-        for (int i = 0; i < array.length(); i++) {
-            JSONObject jsonMovieObject = array.getJSONObject(i);
-
-            if( jsonMovieObject.has(getString(R.string.tmdb_param_id))
-                    && jsonMovieObject.has(getString(R.string.tmdb_param_title))) {
-                MovieItem movieItem = new MovieItem(
-                        Integer.parseInt(jsonMovieObject.getString(getString(R.string.tmdb_param_id))),
-                        jsonMovieObject.getString(getString(R.string.tmdb_param_title))
-                        );
-                if( jsonMovieObject.has(getString(R.string.tmdb_param_originalTitle)) )
-                    movieItem.setOriginalTitle(jsonMovieObject.getString(getString(R.string.tmdb_param_originalTitle)));
-                if( jsonMovieObject.has(getString(R.string.tmdb_param_synopsis)) )
-                    movieItem.setSynopsis(jsonMovieObject.getString(getString(R.string.tmdb_param_synopsis)));
-                if( jsonMovieObject.has(getString(R.string.tmdb_param_popularity)) )
-                    movieItem.setPopularity(jsonMovieObject.getString(getString(R.string.tmdb_param_popularity)));
-                if( jsonMovieObject.has(getString(R.string.tmdb_param_totalVotes)) )
-                    movieItem.setTotalVotes(jsonMovieObject.getString(getString(R.string.tmdb_param_totalVotes)));
-                if( jsonMovieObject.has(getString(R.string.tmdb_param_releaseDate)) )
-                    movieItem.setReleaseDate(jsonMovieObject.getString(getString(R.string.tmdb_param_releaseDate)));
-                if( jsonMovieObject.has(getString(R.string.tmdb_param_poster_thumb)) )
-                    movieItem.setPosterThumb(jsonMovieObject.getString(getString(R.string.tmdb_param_poster_thumb)));
-                if( jsonMovieObject.has(getString(R.string.tmdb_param_posterPath)) )
-                    movieItem.setPosterPath(jsonMovieObject.getString(getString(R.string.tmdb_param_posterPath)));
-
-                results.add(movieItem);
-            }
-        }
-
-        return results;
-    } // end of parseResult
+    public void postupdateMovies(ArrayList<MovieItem> result) {
+        if( m_isLoading && result != null) {
+            m_movieAdapter.addAll(result);
+            Log.d(LOG_TAG, "Update grid: " + result.size());
+        }else{ Log.d(LOG_TAG, "No update grid"); }
+        m_isLoading = false;
+    }
 
 } // end of MoviesGridFragment class
