@@ -7,6 +7,6 @@
         android:defaultValue="@string/pref_header_sort_key_default"
         android:key="@string/pref_header_sort_key"
         android:entries="@array/sortArray"
-        android:entryValues="@array/sortValues"/>
+        android:entryValues="@array/sortValues" />
 
 </PreferenceScreen>

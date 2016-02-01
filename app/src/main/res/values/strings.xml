@@ -10,6 +10,7 @@
         Possible parameters are avaiable at API page, at
         http://docs.themoviedb.apiary.io/#
     -->
+    <string name="tmdb_base_movie_pre_url">http://api.themoviedb.org</string>
     <string name="tmdb_base_url">http://api.themoviedb.org/3/discover/movie?</string>
     <string name="tmdb_param_key">api_key</string>
     <string name="tmdb_param_sort">sort_by</string>
@@ -37,5 +38,7 @@
     <string name="pref_header_refresh_label">Refresh</string>
     <string name="pref_header_refresh_key">refresh</string>
     <string name="movie_detail_popbar_step_size">0.01</string>
+    <string name="trailer_title">Trailers</string>
+    <string name="reviews_title">Reviews</string>
 
 </resources>

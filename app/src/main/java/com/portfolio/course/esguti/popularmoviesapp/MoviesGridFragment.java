@@ -92,7 +92,7 @@ public class MoviesGridFragment extends Fragment {
         });
 
         String clean = "null";
-        if( savedInstanceState != null ) clean = savedInstanceState.toString();
+        if (savedInstanceState != null) clean = savedInstanceState.toString();
         Log.d(LOG_TAG, "Call onCreateView: " + clean);
         reloadInstance(savedInstanceState);
 
@@ -108,14 +108,14 @@ public class MoviesGridFragment extends Fragment {
 
 
     @Override
-    public void onResume(){
+    public void onResume() {
         super.onResume();
 
         //reset in case of sort mode change
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String currrent_sort_mode = prefs.getString(getString(R.string.pref_header_sort_key),
                 getString(R.string.pref_header_sort_key_default));
-        if( m_previous_sort_mode != null && !m_previous_sort_mode.equals(currrent_sort_mode) ){
+        if (m_previous_sort_mode != null && !m_previous_sort_mode.equals(currrent_sort_mode)) {
             resetPage();
         }
     }
@@ -131,7 +131,7 @@ public class MoviesGridFragment extends Fragment {
         // Save UI state changes to the savedInstanceState.
         // This bundle will be passed to onCreate if the process is
         // killed and restarted.
-        savedInstanceState.putInt("currentPos",m_gridView.getFirstVisiblePosition());
+        savedInstanceState.putInt("currentPos", m_gridView.getFirstVisiblePosition());
         savedInstanceState.putBoolean("m_lastPage", m_lastPage);
         savedInstanceState.putInt("m_currentPage", m_currentPage);
         savedInstanceState.putInt("m_previousTotal", m_previousTotal);
@@ -143,14 +143,14 @@ public class MoviesGridFragment extends Fragment {
         savedInstanceState.putParcelableArrayList("m_movieItems", movieItems);
     }
 
-    private void reloadInstance(Bundle savedInstanceState){
-        if( savedInstanceState != null) {
+    private void reloadInstance(Bundle savedInstanceState) {
+        if (savedInstanceState != null) {
             m_lastPage = savedInstanceState.getBoolean("m_lastPage");
             m_currentPage = savedInstanceState.getInt("m_currentPage");
             m_previousTotal = savedInstanceState.getInt("m_previousTotal");
             m_previous_sort_mode = savedInstanceState.getString("m_previous_sort_mode");
             ArrayList<MovieItem> movieItems = savedInstanceState.getParcelableArrayList("m_movieItems");
-            if( movieItems != null ) {
+            if (movieItems != null) {
                 // if update movies has been called before, not update in postupdate
                 if ( m_isLoading ){ m_isLoading = false; }
                 m_movieAdapter.clear();
@@ -174,7 +174,7 @@ public class MoviesGridFragment extends Fragment {
 
         int id = item.getItemId();
 
-        switch (id){
+        switch (id) {
             case R.id.action_settings:
                 SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
                 m_previous_sort_mode = prefs.getString(getString(R.string.pref_header_sort_key),
@@ -190,8 +190,8 @@ public class MoviesGridFragment extends Fragment {
     }
 
 
-    private void resetPage(){
-        if( !m_isLoading ) {
+    private void resetPage() {
+        if (!m_isLoading) {
             m_movieAdapter.clear();
             m_currentPage = 1;
             m_lastPage = false;
@@ -200,7 +200,7 @@ public class MoviesGridFragment extends Fragment {
         }
     }
 
-    private void updateMovies(int current_page){
+    private void updateMovies(int current_page) {
         FetchMoviesTask moviesTask = new FetchMoviesTask(getContext(), this);
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String sort_mode = prefs.getString(getString(R.string.pref_header_sort_key),
@@ -213,7 +213,7 @@ public class MoviesGridFragment extends Fragment {
     }
 
     public void postupdateMovies(ArrayList<MovieItem> result) {
-        if( m_isLoading && result != null) {
+        if (m_isLoading && result != null) {
             m_movieAdapter.addAll(result);
             Log.d(LOG_TAG, "Update grid: " + result.size());
         }else{ Log.d(LOG_TAG, "No update grid"); }

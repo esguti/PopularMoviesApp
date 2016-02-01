@@ -10,32 +10,32 @@ import android.os.Parcelable;
  */
 public class MovieItem implements Parcelable {
     private Integer id;
-    private String  title = "";
-    private String  originalTitle = null;
-    private String  synopsis = null;
-    private String  popularity = "0";
-    private String  totalVotes = "0";
-    private String  releaseDate = null;
-    private String  posterThumb = null;
-    private String  posterPath = null;
+    private String title = "";
+    private String originalTitle = null;
+    private String synopsis = null;
+    private String popularity = "0";
+    private String totalVotes = "0";
+    private String releaseDate = null;
+    private String posterThumb = null;
+    private String posterPath = null;
 
     // CONSTRUCTORS
 
-    public MovieItem (Integer id, String title) {
-        this.id    = id;
+    public MovieItem(Integer id, String title) {
+        this.id = id;
         this.title = title;
     }
 
     protected MovieItem(Parcel in) {
-        id             = in.readInt();
-        title          = in.readString();
-        originalTitle  = in.readString();
-        synopsis       = in.readString();
-        popularity     = in.readString();
-        totalVotes     = in.readString();
-        releaseDate    = in.readString();
+        id = in.readInt();
+        title = in.readString();
+        originalTitle = in.readString();
+        synopsis = in.readString();
+        popularity = in.readString();
+        totalVotes = in.readString();
+        releaseDate = in.readString();
         posterThumb = in.readString();
-        posterPath     = in.readString();
+        posterPath = in.readString();
     }
 
 

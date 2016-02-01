@@ -24,7 +24,7 @@ public class MoviesItemAdapter extends ArrayAdapter<MovieItem> {
      * @param position    The AdapterView position that is requesting a view
      * @param convertView The recycled view to populate.
      *                    (search online for "android view recycling" to learn more)
-     * @param parent The parent ViewGroup that is used for inflation.
+     * @param parent      The parent ViewGroup that is used for inflation.
      * @return The View for the position in the AdapterView.
      */
     @Override

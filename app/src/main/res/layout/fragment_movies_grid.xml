@@ -9,5 +9,4 @@
     android:verticalSpacing="0dp"
     android:horizontalSpacing="0dp"
     tools:context="com.portfolio.course.esguti.popularmoviesapp.MoviesGridFragment"
-    android:id="@+id/fragment_movies_grid">
-</GridView>
+    android:id="@+id/fragment_movies_grid"></GridView>

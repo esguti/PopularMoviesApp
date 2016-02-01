@@ -6,4 +6,5 @@
     <color name="movie_title_synopsis">#2e2c2d</color>
     <color name="movie_title_back">#55000000</color>
     <color name="movie_title_text">@android:color/white</color>
+    <color name="separator_line">@android:color/darker_gray</color>
 </resources>

@@ -31,7 +31,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<MovieItem
     private Context m_context;
     private MoviesGridFragment m_moviesGridFragment;
 
-    public FetchMoviesTask(Context context, MoviesGridFragment moviesGridFragment){
+    public FetchMoviesTask(Context context, MoviesGridFragment moviesGridFragment) {
         m_context = context;
         m_moviesGridFragment = moviesGridFragment;
     }
@@ -136,7 +136,7 @@ public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<MovieItem
         m_moviesGridFragment.postupdateMovies(result);
     }
 
-    private ArrayList<MovieItem> parseResult(String result) throws JSONException{
+    private ArrayList<MovieItem> parseResult(String result) throws JSONException {
         ArrayList<MovieItem> results = new ArrayList<MovieItem>();
 
         Resources res = m_context.getResources();
@@ -145,25 +145,25 @@ public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<MovieItem
         for (int i = 0; i < array.length(); i++) {
             JSONObject jsonMovieObject = array.getJSONObject(i);
 
-            if( jsonMovieObject.has(res.getString(R.string.tmdb_param_id))
+            if (jsonMovieObject.has(res.getString(R.string.tmdb_param_id))
                     && jsonMovieObject.has(res.getString(R.string.tmdb_param_title))) {
                 MovieItem movieItem = new MovieItem(
                         Integer.parseInt(jsonMovieObject.getString(res.getString(R.string.tmdb_param_id))),
                         jsonMovieObject.getString(res.getString(R.string.tmdb_param_title))
                 );
-                if( jsonMovieObject.has(res.getString(R.string.tmdb_param_originalTitle)) )
+                if (jsonMovieObject.has(res.getString(R.string.tmdb_param_originalTitle)))
                     movieItem.setOriginalTitle(jsonMovieObject.getString(res.getString(R.string.tmdb_param_originalTitle)));
-                if( jsonMovieObject.has(res.getString(R.string.tmdb_param_synopsis)) )
+                if (jsonMovieObject.has(res.getString(R.string.tmdb_param_synopsis)))
                     movieItem.setSynopsis(jsonMovieObject.getString(res.getString(R.string.tmdb_param_synopsis)));
-                if( jsonMovieObject.has(res.getString(R.string.tmdb_param_popularity)) )
+                if (jsonMovieObject.has(res.getString(R.string.tmdb_param_popularity)))
                     movieItem.setPopularity(jsonMovieObject.getString(res.getString(R.string.tmdb_param_popularity)));
-                if( jsonMovieObject.has(res.getString(R.string.tmdb_param_totalVotes)) )
+                if (jsonMovieObject.has(res.getString(R.string.tmdb_param_totalVotes)))
                     movieItem.setTotalVotes(jsonMovieObject.getString(res.getString(R.string.tmdb_param_totalVotes)));
-                if( jsonMovieObject.has(res.getString(R.string.tmdb_param_releaseDate)) )
+                if (jsonMovieObject.has(res.getString(R.string.tmdb_param_releaseDate)))
                     movieItem.setReleaseDate(jsonMovieObject.getString(res.getString(R.string.tmdb_param_releaseDate)));
-                if( jsonMovieObject.has(res.getString(R.string.tmdb_param_poster_thumb)) )
+                if (jsonMovieObject.has(res.getString(R.string.tmdb_param_poster_thumb)))
                     movieItem.setPosterThumb(jsonMovieObject.getString(res.getString(R.string.tmdb_param_poster_thumb)));
-                if( jsonMovieObject.has(res.getString(R.string.tmdb_param_posterPath)) )
+                if (jsonMovieObject.has(res.getString(R.string.tmdb_param_posterPath)))
                     movieItem.setPosterPath(jsonMovieObject.getString(res.getString(R.string.tmdb_param_posterPath)));
 
                 results.add(movieItem);
