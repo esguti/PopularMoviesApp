@@ -16,9 +16,17 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
+import com.portfolio.course.esguti.popularmoviesapp.MovieItem;
+import com.portfolio.course.esguti.popularmoviesapp.movie.MoviesService;
+import com.portfolio.course.esguti.popularmoviesapp.movie.MoviesServiceGenerator;
 import com.squareup.picasso.Picasso;
 
 import java.util.ArrayList;
+import java.util.Arrays;
+
+import retrofit2.Call;
+import retrofit2.Callback;
+import retrofit2.Response;
 
 
 /**
@@ -84,7 +92,13 @@ public class MoviesGridFragment extends Fragment {
                         m_previousTotal = totalItemCount;
                     }
                 }
-                if (!m_lastPage && !m_isLoading
+
+                SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+                String sort_mode = prefs.getString(getString(R.string.pref_header_sort_key),
+                        getString(R.string.pref_header_sort_key_default));
+                String fav_key = getString(R.string.pref_header_sort_key_favorite);
+
+                if (!m_lastPage && !m_isLoading && !sort_mode.equals(fav_key)
                         && (totalItemCount - VISIBLE_THRESHOLD) <= (firstVisibleItem + visibleItemCount)) {
                     updateMovies(m_currentPage);
                 }
@@ -150,7 +164,8 @@ public class MoviesGridFragment extends Fragment {
             m_previousTotal = savedInstanceState.getInt("m_previousTotal");
             m_previous_sort_mode = savedInstanceState.getString("m_previous_sort_mode");
             ArrayList<MovieItem> movieItems = savedInstanceState.getParcelableArrayList("m_movieItems");
-            if (movieItems != null) {
+
+            if ( movieItems != null ) {
                 // if update movies has been called before, not update in postupdate
                 if ( m_isLoading ){ m_isLoading = false; }
                 m_movieAdapter.clear();
@@ -160,6 +175,12 @@ public class MoviesGridFragment extends Fragment {
                 Log.d(LOG_TAG, "Restored lastpage: " + String.valueOf(m_currentPage));
                 Log.d(LOG_TAG, "Restored position: " + savedInstanceState.getInt("currentPos"));
             }
+        }else {
+            SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
+            String sort_mode = prefs.getString(getString(R.string.pref_header_sort_key),
+                    getString(R.string.pref_header_sort_key_default));
+            String fav_key = getString(R.string.pref_header_sort_key_favorite);
+            if( sort_mode.equals(fav_key) ){ updateMovies(m_currentPage); }
         }
     }
 
@@ -201,20 +222,65 @@ public class MoviesGridFragment extends Fragment {
     }
 
     private void updateMovies(int current_page) {
-        FetchMoviesTask moviesTask = new FetchMoviesTask(getContext(), this);
+
         SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
         String sort_mode = prefs.getString(getString(R.string.pref_header_sort_key),
                 getString(R.string.pref_header_sort_key_default));
-        String current_page_str = Integer.toString(current_page);
-        m_isLoading = true;
-        moviesTask.execute(sort_mode, current_page_str);
-        m_currentPage++;
-        if (m_currentPage + 1 > MAX_PAGE) { m_lastPage = true; }
+        String fav_key = getString(R.string.pref_header_sort_key_favorite);
+
+        if( sort_mode.equals(fav_key) ){
+            m_movieAdapter.clear();
+            m_movieAdapter.notifyDataSetChanged();
+
+            //look only for favorites
+            //get the list
+            String[] favList = Favorites.getFavoriteList(getActivity());
+            Log.d(LOG_TAG, "Fav List = " + Arrays.toString(favList));
+
+            //start the calls
+            MoviesService client = MoviesServiceGenerator.createService(MoviesService.class, getContext());
+            for( String movie: favList) {
+                int movie_id = Integer.parseInt(movie);
+
+                Call<MovieItem> call = client.summary(movie_id, null);
+                call.enqueue(new Callback<MovieItem>() {
+                    @Override
+                    public void onResponse(Response<MovieItem> response) {
+                        Log.d(LOG_TAG, "Status Code = " + response.code());
+                        if (response.isSuccess()) {
+                            // request successful (status code 200, 201)
+                            MovieItem movie_sum = response.body();
+                            Log.d(LOG_TAG, "Get MovieItem found= " + movie_sum.id);
+
+                            m_movieAdapter.add(movie_sum);
+                            m_movieAdapter.notifyDataSetChanged();
+                        }
+                    }
+
+                    @Override
+                    public void onFailure(Throwable t) {
+                        Log.d(LOG_TAG, "Get MovieItem Failed: " + t.toString());
+                    }
+                });
+            } // enf for fav list
+        }else {
+            //download from internet the movie list
+            FetchMoviesTask moviesTask = new FetchMoviesTask(getContext(), this);
+
+            String current_page_str = Integer.toString(current_page);
+            m_isLoading = true;
+            moviesTask.execute(sort_mode, current_page_str);
+            m_currentPage++;
+            if (m_currentPage + 1 > MAX_PAGE) {
+                m_lastPage = true;
+            }else{ m_lastPage = false; }
+        }
     }
 
     public void postupdateMovies(ArrayList<MovieItem> result) {
         if (m_isLoading && result != null) {
             m_movieAdapter.addAll(result);
+            m_movieAdapter.notifyDataSetChanged();
             Log.d(LOG_TAG, "Update grid: " + result.size());
         }else{ Log.d(LOG_TAG, "No update grid"); }
         m_isLoading = false;

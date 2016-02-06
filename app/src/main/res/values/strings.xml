@@ -4,6 +4,7 @@
     <!-- Detail movie layout -->
     <string name="thumb_description">Image thumbnail</string>
     <string name="movie_detail_popbar_star_num">5</string>
+    <string name="favorite_text">Favorite</string>
 
     <!--
         Construct the URL for the themoviedb query
@@ -34,11 +35,14 @@
     <string name="pref_header_sort_key">sort_movies</string>
     <string name="pref_header_sort_label_default">Most popular Des</string>
     <string name="pref_header_sort_key_default">popularity.desc</string>
+    <string name="pref_header_sort_key_favorite">favorite</string>
     <!-- Refresh menu -->
     <string name="pref_header_refresh_label">Refresh</string>
     <string name="pref_header_refresh_key">refresh</string>
     <string name="movie_detail_popbar_step_size">0.01</string>
     <string name="trailer_title">Trailers</string>
     <string name="reviews_title">Reviews</string>
+    <string name="save_favorite">favorites</string>
+    <string name="favorite_description">favorite</string>
 
 </resources>

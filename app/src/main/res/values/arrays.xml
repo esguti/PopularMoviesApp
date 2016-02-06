@@ -5,11 +5,13 @@
         <item>Most popular Asc</item>
         <item>Highest Rated Des</item>
         <item>Highest Rated Asc</item>
+        <item>Favorites</item>
     </string-array>
     <string-array name="sortValues">
         <item>@string/pref_header_sort_key_default</item>
         <item>popularity.asc</item>
         <item>vote_average.desc</item>
         <item>vote_average.asc</item>
+        <item>@string/pref_header_sort_key_favorite</item>
     </string-array>
 </resources>

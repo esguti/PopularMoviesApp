@@ -11,6 +11,7 @@
         android:orientation="vertical">
 
         <RelativeLayout
+            android:id="@+id/movie_detail_relative"
             android:orientation="horizontal"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -28,7 +29,7 @@
                 android:id="@+id/movie_detail_thumb_layout"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_toRightOf="@+id/movie_detail_thumb_img">
+                android:layout_toRightOf="@id/movie_detail_thumb_img">
 
                 <TextView
                     android:id="@+id/movie_detail_thumb_title"
@@ -42,6 +43,12 @@
                     android:layout_height="wrap_content"
                     style="@style/movie_detail_thumb_text" />
 
+                <ImageView
+                    android:id="@+id/movie_detail_favorite_img"
+                    android:onClick="clickFavorite"
+                    android:contentDescription="@string/favorite_description"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content" />
             </LinearLayout>
 
         </RelativeLayout>
@@ -91,13 +98,13 @@
             <TextView
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:text="@string/reviews_title"
+                android:text="@string/trailer_title"
                 android:id="@+id/lbl_trailer" />
 
             <android.support.v7.widget.RecyclerView
                 android:scrollbars="horizontal"
                 android:layout_width="wrap_content"
-                android:layout_height="@dimen/fragment_movie_detail_reviews"
+                android:layout_height="@dimen/fragment_movie_detail_trailers"
                 android:id="@+id/fragment_movie_detail_trailers" />
 
             <View

@@ -154,17 +154,17 @@ public class FetchMoviesTask extends AsyncTask<String, Void, ArrayList<MovieItem
                 if (jsonMovieObject.has(res.getString(R.string.tmdb_param_originalTitle)))
                     movieItem.setOriginalTitle(jsonMovieObject.getString(res.getString(R.string.tmdb_param_originalTitle)));
                 if (jsonMovieObject.has(res.getString(R.string.tmdb_param_synopsis)))
-                    movieItem.setSynopsis(jsonMovieObject.getString(res.getString(R.string.tmdb_param_synopsis)));
+                    movieItem.setOverview(jsonMovieObject.getString(res.getString(R.string.tmdb_param_synopsis)));
                 if (jsonMovieObject.has(res.getString(R.string.tmdb_param_popularity)))
                     movieItem.setPopularity(jsonMovieObject.getString(res.getString(R.string.tmdb_param_popularity)));
                 if (jsonMovieObject.has(res.getString(R.string.tmdb_param_totalVotes)))
-                    movieItem.setTotalVotes(jsonMovieObject.getString(res.getString(R.string.tmdb_param_totalVotes)));
+                    movieItem.setVote_count(jsonMovieObject.getString(res.getString(R.string.tmdb_param_totalVotes)));
                 if (jsonMovieObject.has(res.getString(R.string.tmdb_param_releaseDate)))
-                    movieItem.setReleaseDate(jsonMovieObject.getString(res.getString(R.string.tmdb_param_releaseDate)));
+                    movieItem.setRelease_date(jsonMovieObject.getString(res.getString(R.string.tmdb_param_releaseDate)));
                 if (jsonMovieObject.has(res.getString(R.string.tmdb_param_poster_thumb)))
-                    movieItem.setPosterThumb(jsonMovieObject.getString(res.getString(R.string.tmdb_param_poster_thumb)));
+                    movieItem.setBackdrop_path(jsonMovieObject.getString(res.getString(R.string.tmdb_param_poster_thumb)));
                 if (jsonMovieObject.has(res.getString(R.string.tmdb_param_posterPath)))
-                    movieItem.setPosterPath(jsonMovieObject.getString(res.getString(R.string.tmdb_param_posterPath)));
+                    movieItem.setPoster_path(jsonMovieObject.getString(res.getString(R.string.tmdb_param_posterPath)));
 
                 results.add(movieItem);
             }

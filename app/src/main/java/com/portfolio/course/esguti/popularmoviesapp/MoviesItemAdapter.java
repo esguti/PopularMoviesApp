@@ -1,6 +1,7 @@
 package com.portfolio.course.esguti.popularmoviesapp;
 
 import android.app.Activity;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -10,13 +11,20 @@ import android.widget.TextView;
 
 import com.squareup.picasso.Picasso;
 
+import java.util.HashSet;
+
 /**
  * Created by esguti on 08.12.15.
  */
 public class MoviesItemAdapter extends ArrayAdapter<MovieItem> {
     private final String LOG_TAG = MoviesItemAdapter.class.getSimpleName();
 
-    public MoviesItemAdapter(Activity context) { super(context, 0); }
+    private HashSet<Integer> m_id_set;
+
+    public MoviesItemAdapter(Activity context) {
+        super(context, 0);
+        m_id_set = new HashSet<>();
+    }
 
     /**
      * Provides a view for an AdapterView (ListView, GridView, etc.)
@@ -51,5 +59,4 @@ public class MoviesItemAdapter extends ArrayAdapter<MovieItem> {
 
         return convertView;
     }
-
 }
