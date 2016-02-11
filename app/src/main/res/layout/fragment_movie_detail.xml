@@ -83,7 +83,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/separator_line"
-                android:background="@color/separator_line"/>
+                android:background="@color/separator_line" />
 
             <TextView
                 android:id="@+id/movie_detail_synopsis"
@@ -94,7 +94,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/separator_line"
-                android:background="@color/separator_line"/>
+                android:background="@color/separator_line" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -111,7 +111,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/separator_line"
-                android:background="@color/separator_line"/>
+                android:background="@color/separator_line" />
 
             <TextView
                 android:layout_width="match_parent"
@@ -128,7 +128,7 @@
             <View
                 android:layout_width="match_parent"
                 android:layout_height="@dimen/separator_line"
-                android:background="@color/separator_line"/>
+                android:background="@color/separator_line" />
 
         </LinearLayout>
 

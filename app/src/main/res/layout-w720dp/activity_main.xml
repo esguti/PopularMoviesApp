@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/main_fragment"
     android:showDividers="middle"
     android:baselineAligned="false"
@@ -15,16 +14,17 @@
         tools:layout="@layout/activity_main"
         android:layout_width="@dimen/grid_cols_width_large"
         android:layout_height="wrap_content"
-        android:layout_weight="1"/>
+        android:layout_weight="1" />
 
-    <View android:background="@color/separator_line"
+    <View
+        android:background="@color/separator_line"
         android:layout_width="1dp"
-        android:layout_height="wrap_content"/>
+        android:layout_height="wrap_content" />
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/container"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="3"/>
+        android:layout_weight="3" />
 
 </LinearLayout>
