@@ -9,6 +9,9 @@ import android.os.Parcelable;
  * Created by esguti on 04.12.15.
  */
 public class MovieItem implements Parcelable {
+
+    static final String DETAIL_MOVIE = "MOVIE";
+
     public Integer id;
     public String title = "";
     public String original_title= null;

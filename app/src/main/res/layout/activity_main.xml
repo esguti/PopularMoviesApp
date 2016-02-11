@@ -4,4 +4,4 @@
     android:name="com.portfolio.course.esguti.popularmoviesapp.MoviesGridFragment"
     tools:layout="@layout/activity_main"
     android:layout_width="match_parent"
-    android:layout_height="match_parent" />
+    android:layout_height="match_parent"/>

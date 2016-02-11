@@ -1,10 +1,14 @@
 <resources>
+
+    <!-- Global values -->
     <string name="app_name">Popular Movies</string>
+    <string name="device_large_width">720</string>
 
     <!-- Detail movie layout -->
     <string name="thumb_description">Image thumbnail</string>
     <string name="movie_detail_popbar_star_num">5</string>
     <string name="favorite_text">Favorite</string>
+    <string name="trailer_video_root">http://www.youtube.com/watch?v=</string>
 
     <!--
         Construct the URL for the themoviedb query

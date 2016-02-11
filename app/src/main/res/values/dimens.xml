@@ -11,4 +11,9 @@
     <dimen name="separator_line">1dp</dimen>
     <dimen name="fragment_movie_detail_reviews">200dp</dimen>
     <dimen name="fragment_movie_detail_trailers">50dp</dimen>
+
+    <!-- Grid sizes -->
+    <dimen name="grid_col_width">150dp</dimen>
+    <dimen name="grid_cols_width_large">302dp</dimen>
+    <dimen name="grid_inter_space">2dp</dimen>
 </resources>

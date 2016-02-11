@@ -2,6 +2,7 @@ package com.portfolio.course.esguti.popularmoviesapp;
 
 import android.content.Context;
 import android.support.v7.widget.RecyclerView;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -64,6 +65,7 @@ public class MoviesReviewAdapter extends RecyclerView.Adapter<MoviesReviewAdapte
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.m_author.setText(m_reviews.get(position).author);
         holder.m_content.setText(m_reviews.get(position).content);
+        Log.d(LOG_TAG, "AUTH SIZE: " + holder.m_author.getTextSize());
     }
 
     @Override

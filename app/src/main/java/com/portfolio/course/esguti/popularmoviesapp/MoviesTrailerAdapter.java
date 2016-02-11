@@ -1,6 +1,8 @@
 package com.portfolio.course.esguti.popularmoviesapp;
 
 import android.content.Context;
+import android.content.Intent;
+import android.net.Uri;
 import android.support.v7.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,10 +23,12 @@ public class MoviesTrailerAdapter extends RecyclerView.Adapter<MoviesTrailerAdap
 
     private List<Trailer> m_trailers;
     private LayoutInflater m_inflater;
+    private Context m_context;
 
     MoviesTrailerAdapter(Context context) {
         m_inflater = LayoutInflater.from(context);
         m_trailers = new ArrayList<>();
+        m_context = context;
     }
 
     public List<Trailer> getTrailerList() {
@@ -63,11 +67,31 @@ public class MoviesTrailerAdapter extends RecyclerView.Adapter<MoviesTrailerAdap
     @Override
     public void onBindViewHolder(ViewHolder holder, int position) {
         holder.m_text.setText(m_trailers.get(position).name);
+        holder.m_text.setTag(m_trailers.get(position).key);
+        holder.m_text.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                openVideo(v);
+            }
+        });
         holder.m_icon.setTag(m_trailers.get(position).key);
+        holder.m_icon.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) { openVideo(v); }
+        });
     }
 
     @Override
     public void onAttachedToRecyclerView(RecyclerView recyclerView) {
         super.onAttachedToRecyclerView(recyclerView);
     }
+
+    private void openVideo(View view) {
+        //Get url from tag
+        String id = (String) view.getTag();
+        Intent intent = new Intent(Intent.ACTION_VIEW,
+                Uri.parse( m_context.getString(R.string.trailer_video_root) + id));
+        m_context.startActivity(intent);
+    }
+
 }

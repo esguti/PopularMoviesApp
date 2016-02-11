@@ -2,6 +2,7 @@ package com.portfolio.course.esguti.popularmoviesapp;
 
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.graphics.Point;
 import android.os.Bundle;
 import android.preference.PreferenceManager;
 import android.support.v4.app.Fragment;
@@ -16,7 +17,6 @@ import android.widget.AbsListView;
 import android.widget.AdapterView;
 import android.widget.GridView;
 
-import com.portfolio.course.esguti.popularmoviesapp.MovieItem;
 import com.portfolio.course.esguti.popularmoviesapp.movie.MoviesService;
 import com.portfolio.course.esguti.popularmoviesapp.movie.MoviesServiceGenerator;
 import com.squareup.picasso.Picasso;
@@ -46,11 +46,30 @@ public class MoviesGridFragment extends Fragment {
     private int m_previousTotal = 0;
     private String m_previous_sort_mode = null;
 
+    // Flag determines if this is a one or two pane layout
+    private boolean m_isTwoPane = false;
+
     public MoviesGridFragment() {}
+
+    @Override
+    public void onCreate(Bundle savedInstanceState) {
+        super.onCreate(savedInstanceState);
+        setHasOptionsMenu(true);
+
+
+        Point size = new Point();
+        getActivity().getWindowManager().getDefaultDisplay().getSize(size);
+        if( size.x >= Integer.parseInt(getString(R.string.device_large_width)) ) {
+            Log.d(LOG_TAG, size.toString());
+            m_isTwoPane = true;
+        }
+    }
+
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
+
         // Inflate the layout for this fragment
         View rootView = inflater.inflate(R.layout.fragment_movies_grid, container, false);
 
@@ -68,13 +87,25 @@ public class MoviesGridFragment extends Fragment {
         m_gridView.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
-                MovieItem movie = m_movieAdapter.getItem(position);
-                Intent movieIntent = new Intent(getActivity(), MovieDetailActivity.class);
-                movieIntent.putExtra(MovieItem.class.getName(), movie);
 
-                // Verify that the intent will resolve to an activity
-                if (movieIntent.resolveActivity(getContext().getPackageManager()) != null) {
-                    startActivity(movieIntent);
+                MovieItem movie = m_movieAdapter.getItem(position);
+
+                if (m_isTwoPane) { // single activity with list and detail
+
+                    // Replace framelayout with new detail fragment
+                    MovieDetailActivity.MovieDetailActivityFragment fragmentItem = MovieDetailActivity.newInstance(movie);
+                    android.support.v4.app.FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                    ft.replace(R.id.container, fragmentItem);
+                    ft.commit();
+                } else { // go to separate activity
+
+                    Intent movieIntent = new Intent(getActivity(), MovieDetailActivity.class);
+                    movieIntent.putExtra(MovieItem.class.getName(), movie);
+
+                    // Verify that the intent will resolve to an activity
+                    if (movieIntent.resolveActivity(getContext().getPackageManager()) != null) {
+                        startActivity(movieIntent);
+                    }
                 }
             }
         });
@@ -134,11 +165,6 @@ public class MoviesGridFragment extends Fragment {
         }
     }
 
-    @Override
-    public void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setHasOptionsMenu(true);
-    }
 
     private void saveInstance(Bundle savedInstanceState) {
         super.onSaveInstanceState(savedInstanceState);
@@ -214,6 +240,9 @@ public class MoviesGridFragment extends Fragment {
     private void resetPage() {
         if (!m_isLoading) {
             m_movieAdapter.clear();
+            android.support.v4.app.FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+            ft.replace(R.id.container, new Fragment());
+            ft.commit();
             m_currentPage = 1;
             m_lastPage = false;
             m_previousTotal = 0;
