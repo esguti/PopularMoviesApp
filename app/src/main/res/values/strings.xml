@@ -2,7 +2,6 @@
 
     <!-- Global values -->
     <string name="app_name">Popular Movies</string>
-    <string name="device_large_width">720</string>
 
     <!-- Detail movie layout -->
     <string name="thumb_description">Image thumbnail</string>

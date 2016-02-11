@@ -111,7 +111,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         }
 
 
-        void insertReviews(View rootView, MovieItem movie, MoviesService client) {
+        private void insertReviews(View rootView, MovieItem movie, MoviesService client) {
             m_viewReviews = (RecyclerView) rootView.findViewById(R.id.fragment_movie_detail_reviews);
 
 
@@ -146,7 +146,7 @@ public class MovieDetailActivity extends AppCompatActivity {
         }
 
 
-        void insertTrailers(View rootView, MovieItem movie, MoviesService client) {
+        private void insertTrailers(View rootView, MovieItem movie, MoviesService client) {
             m_viewTrailers = (RecyclerView) rootView.findViewById(R.id.fragment_movie_detail_trailers);
             m_layoutTrailers = new LinearLayoutManager(getActivity(), LinearLayoutManager.HORIZONTAL, false);
             m_adapterTrailers = new MoviesTrailerAdapter(getActivity());

@@ -1,5 +1,6 @@
 package com.portfolio.course.esguti.popularmoviesapp;
 
+import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.graphics.Point;
@@ -15,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AdapterView;
+import android.widget.FrameLayout;
 import android.widget.GridView;
 
 import com.portfolio.course.esguti.popularmoviesapp.movie.MoviesService;
@@ -34,7 +36,7 @@ import retrofit2.Response;
  */
 public class MoviesGridFragment extends Fragment {
 
-    private final String LOG_TAG = MoviesGridFragment.class.getSimpleName();
+    private static final String LOG_TAG = MoviesGridFragment.class.getSimpleName();
 
     private MoviesItemAdapter m_movieAdapter;
     private GridView m_gridView;
@@ -46,32 +48,35 @@ public class MoviesGridFragment extends Fragment {
     private int m_previousTotal = 0;
     private String m_previous_sort_mode = null;
 
-    // Flag determines if this is a one or two pane layout
-    private boolean m_isTwoPane = false;
-
     public MoviesGridFragment() {}
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setHasOptionsMenu(true);
-
-
-        Point size = new Point();
-        getActivity().getWindowManager().getDefaultDisplay().getSize(size);
-        if( size.x >= Integer.parseInt(getString(R.string.device_large_width)) ) {
-            Log.d(LOG_TAG, size.toString());
-            m_isTwoPane = true;
-        }
     }
 
+
+    // Determines if this is a one or two pane layout
+    private static boolean isTwoPanel(Activity act) {
+        FrameLayout frm = (FrameLayout) act.findViewById(R.id.container);
+        int heithDph = act.getResources().getConfiguration().screenHeightDp;
+        int widthDph = act.getResources().getConfiguration().screenWidthDp;
+        Log.d(LOG_TAG,
+                "Width:" + String.valueOf(widthDph) + " Height:" + String.valueOf(heithDph));
+        if( frm != null){
+            return true;
+        }else{
+            return false;
+        }
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         // Inflate the layout for this fragment
-        View rootView = inflater.inflate(R.layout.fragment_movies_grid, container, false);
+        final View rootView = inflater.inflate(R.layout.fragment_movies_grid, container, false);
 
         //create the adaptor
         m_movieAdapter = new MoviesItemAdapter(getActivity());
@@ -90,7 +95,7 @@ public class MoviesGridFragment extends Fragment {
 
                 MovieItem movie = m_movieAdapter.getItem(position);
 
-                if (m_isTwoPane) { // single activity with list and detail
+                if ( isTwoPanel(getActivity()) ) { // single activity with list and detail
 
                     // Replace framelayout with new detail fragment
                     MovieDetailActivity.MovieDetailActivityFragment fragmentItem = MovieDetailActivity.newInstance(movie);
@@ -240,9 +245,12 @@ public class MoviesGridFragment extends Fragment {
     private void resetPage() {
         if (!m_isLoading) {
             m_movieAdapter.clear();
-            android.support.v4.app.FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
-            ft.replace(R.id.container, new Fragment());
-            ft.commit();
+            getActivity().setTitle(getString(R.string.app_name));
+            if( isTwoPanel(getActivity()) ) {
+                android.support.v4.app.FragmentTransaction ft = getActivity().getSupportFragmentManager().beginTransaction();
+                ft.replace(R.id.container, new Fragment());
+                ft.commit();
+            }
             m_currentPage = 1;
             m_lastPage = false;
             m_previousTotal = 0;
