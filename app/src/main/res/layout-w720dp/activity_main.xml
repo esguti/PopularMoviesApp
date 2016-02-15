@@ -5,14 +5,15 @@
     android:baselineAligned="false"
     android:orientation="horizontal"
     android:layout_width="match_parent"
-    android:layout_height="match_parent">
+    android:layout_height="match_parent"
+    android:weightSum="3">
 
     <fragment xmlns:android="http://schemas.android.com/apk/res/android"
         xmlns:tools="http://schemas.android.com/tools"
         android:id="@+id/main_fragment_large"
         android:name="com.portfolio.course.esguti.popularmoviesapp.MoviesGridFragment"
         tools:layout="@layout/activity_main"
-        android:layout_width="@dimen/grid_cols_width_large"
+        android:layout_width="0dp"
         android:layout_height="wrap_content"
         android:layout_weight="1" />
 
@@ -23,8 +24,9 @@
 
     <FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/container"
+        android:padding="@dimen/movie_detail_pad"
         android:layout_width="0dp"
         android:layout_height="match_parent"
-        android:layout_weight="3" />
+        android:layout_weight="2" />
 
 </LinearLayout>

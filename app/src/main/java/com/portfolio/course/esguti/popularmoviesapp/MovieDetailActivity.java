@@ -39,6 +39,7 @@ public class MovieDetailActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
+        getSupportActionBar().setDisplayHomeAsUpEnabled(false);
         setContentView(R.layout.activity_movie_detail);
 
         if (savedInstanceState == null) {
@@ -138,7 +139,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Throwable t) {
-                    Toast.makeText(getContext(), "Get Reviews Failed", Toast.LENGTH_LONG)
+                    Toast.makeText(getContext(), R.string.error_review, Toast.LENGTH_LONG)
                             .show();
                     Log.d(LOG_TAG, "Get Reviews Failed: " + t.toString());
                 }
@@ -171,7 +172,7 @@ public class MovieDetailActivity extends AppCompatActivity {
 
                 @Override
                 public void onFailure(Throwable t) {
-                    Toast.makeText(getContext(), "Get Trailer Failed", Toast.LENGTH_LONG)
+                    Toast.makeText(getContext(), R.string.error_trailer, Toast.LENGTH_LONG)
                             .show();
                     Log.d(LOG_TAG, "Get Trailer Failed: " + t.toString());
                 }
@@ -231,7 +232,7 @@ public class MovieDetailActivity extends AppCompatActivity {
                     Date date = src_date_format.parse(release_date);
                     txt_release_date.setText(dst_date_format.format(date));
                 } catch (ParseException e) {
-                    txt_release_date.setText("no available");
+                    txt_release_date.setText(getString(R.string.error_no_avail));
                 }
                 String starNum = getString(R.string.movie_detail_popbar_star_num);
                 String popularity = movie.getPopularity();

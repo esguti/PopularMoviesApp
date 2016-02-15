@@ -3,6 +3,11 @@
     <!-- Global values -->
     <string name="app_name">Popular Movies</string>
 
+    <!-- UI values -->
+    <string name="error_no_avail">No Available</string>
+    <string name="error_review">Get Reviews Failed</string>
+    <string name="error_trailer">Get Trailer Failed</string>
+
     <!-- Detail movie layout -->
     <string name="thumb_description">Image thumbnail</string>
     <string name="movie_detail_popbar_star_num">5</string>

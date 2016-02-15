@@ -8,6 +8,7 @@
     <dimen name="movie_item_text_pad">5dp</dimen>
     <dimen name="movie_detail_thumb_text_pad">5dp</dimen>
     <dimen name="movie_detail_synopsis_pad">10dp</dimen>
+    <dimen name="movie_detail_pad">2dp</dimen>
     <dimen name="separator_line">1dp</dimen>
     <dimen name="fragment_movie_detail_reviews">300dp</dimen>
     <dimen name="fragment_movie_detail_trailers">50dp</dimen>

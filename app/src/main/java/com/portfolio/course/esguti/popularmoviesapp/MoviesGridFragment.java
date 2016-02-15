@@ -38,6 +38,13 @@ public class MoviesGridFragment extends Fragment {
 
     private static final String LOG_TAG = MoviesGridFragment.class.getSimpleName();
 
+    private static final String CURR_POS  = "currentPos";
+    private static final String LAST_PAGE = "m_lastPage";
+    private static final String CURR_PAGE = "m_currentPage";
+    private static final String PREV_TOT  = "m_previousTotal";
+    private static final String PREV_SORT = "m_previous_sort_mode";
+    private static final String MOV_ITEMS = "m_movieItems";
+    
     private MoviesItemAdapter m_movieAdapter;
     private GridView m_gridView;
     private static final int MAX_PAGE = 1000;
@@ -176,35 +183,35 @@ public class MoviesGridFragment extends Fragment {
         // Save UI state changes to the savedInstanceState.
         // This bundle will be passed to onCreate if the process is
         // killed and restarted.
-        savedInstanceState.putInt("currentPos", m_gridView.getFirstVisiblePosition());
-        savedInstanceState.putBoolean("m_lastPage", m_lastPage);
-        savedInstanceState.putInt("m_currentPage", m_currentPage);
-        savedInstanceState.putInt("m_previousTotal", m_previousTotal);
-        savedInstanceState.putString("m_previous_sort_mode", m_previous_sort_mode);
+        savedInstanceState.putInt(CURR_POS, m_gridView.getFirstVisiblePosition());
+        savedInstanceState.putBoolean(LAST_PAGE, m_lastPage);
+        savedInstanceState.putInt(CURR_PAGE, m_currentPage);
+        savedInstanceState.putInt(PREV_TOT, m_previousTotal);
+        savedInstanceState.putString(PREV_SORT, m_previous_sort_mode);
         ArrayList<MovieItem> movieItems = new ArrayList<>();
         for (int i = 0; i < m_movieAdapter.getCount(); i++) {
             movieItems.add(m_movieAdapter.getItem(i));
         }
-        savedInstanceState.putParcelableArrayList("m_movieItems", movieItems);
+        savedInstanceState.putParcelableArrayList(MOV_ITEMS, movieItems);
     }
 
     private void reloadInstance(Bundle savedInstanceState) {
         if (savedInstanceState != null) {
-            m_lastPage = savedInstanceState.getBoolean("m_lastPage");
-            m_currentPage = savedInstanceState.getInt("m_currentPage");
-            m_previousTotal = savedInstanceState.getInt("m_previousTotal");
-            m_previous_sort_mode = savedInstanceState.getString("m_previous_sort_mode");
-            ArrayList<MovieItem> movieItems = savedInstanceState.getParcelableArrayList("m_movieItems");
+            m_lastPage = savedInstanceState.getBoolean(LAST_PAGE);
+            m_currentPage = savedInstanceState.getInt(CURR_PAGE);
+            m_previousTotal = savedInstanceState.getInt(PREV_TOT);
+            m_previous_sort_mode = savedInstanceState.getString(PREV_SORT);
+            ArrayList<MovieItem> movieItems = savedInstanceState.getParcelableArrayList(MOV_ITEMS);
 
             if ( movieItems != null ) {
                 // if update movies has been called before, not update in postupdate
                 if ( m_isLoading ){ m_isLoading = false; }
                 m_movieAdapter.clear();
                 m_movieAdapter.addAll(movieItems);
-                m_gridView.setSelection(savedInstanceState.getInt("currentPos"));
+                m_gridView.setSelection(savedInstanceState.getInt(CURR_POS));
                 Log.d(LOG_TAG, "Restored items: " + String.valueOf(movieItems.size()));
                 Log.d(LOG_TAG, "Restored lastpage: " + String.valueOf(m_currentPage));
-                Log.d(LOG_TAG, "Restored position: " + savedInstanceState.getInt("currentPos"));
+                Log.d(LOG_TAG, "Restored position: " + savedInstanceState.getInt(CURR_POS));
             }
         }else {
             SharedPreferences prefs = PreferenceManager.getDefaultSharedPreferences(getActivity());
